@@ -135,7 +135,7 @@
     sel.push('</select>');
 
     var h = ['<h1>Assumption check</h1>',
-      '<p class="banner info ac-notice" role="note">Type any number. Nothing is stored or sent. In a pilot this would be the bank’s own assumption or stress path. Descriptive only: not a test of whether an assumption is right.</p>',
+      '<p class="banner info ac-notice" role="note">Type any number. Nothing is stored or sent. In a pilot this would be the bank’s own assumption: a plan rate, a model input or a stress path. Descriptive only: not a test of whether an assumption is right.</p>',
       note,
       '<section class="card ac-main" id="ac-main"><div class="controls"><label>Variable and horizon' + sel.join('') + '</label>' +
       '<label>Typed value <span class="ac-inp"><input type="number" id="ac-val" step="any" inputmode="decimal" data-sel="acval" data-gk="' + esc(g.key) + '" value="' + esc(S.val === null ? '' : S.val) + '" aria-describedby="ac-unit"> <span id="ac-unit" class="ac-unit">' + esc(M.unitName(id)) + '</span></span>' + (g.key === PREFILL_KEY ? '<span class="ac-hint">Example: a plan that assumes two rate cuts in 2026.</span>' : '') + '</label></div>',

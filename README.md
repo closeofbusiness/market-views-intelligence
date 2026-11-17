@@ -2,7 +2,7 @@
 
 **Live demo:** https://closeofbusiness.github.io/market-views-intelligence/
 
-A concept illustration of a dashboard that structures published market views on rates, FX, inflation, policy rates and commodities: where forecasts cluster, how far they spread, who sits outside the pack, and the sentence behind each number.
+A concept illustration of one place where the whole bank sees what the market expects and how that is changing: published views on rates, FX, inflation, policy rates and commodities, where forecasts cluster, how far they spread, who sits outside the pack, and the sentence behind each number. In a later phase it would also hold views recorded inside the bank, such as sales call reports and desk emails on what clients think. AI reads and extracts each forecast and view together with its source.
 
 ## What this is
 
@@ -12,7 +12,7 @@ A concept illustration of a dashboard that structures published market views on 
 - 21 spoken views from 8 named speakers on free, public podcasts, each with a transcript excerpt and a link to the episode. Excerpts come from machine transcripts and may contain transcription errors; the episode audio is the source of record. These views are qualitative and do not enter the consensus numbers.
 - An Assumption check page: type a number and see where it sits among the published views, with the number of sources and their dates. Descriptive only; nothing is stored or sent.
 - A Sources page listing 67 institutions (banks, asset managers, insurers) that publish market research freely on the open web; 37 were opened and read without login on 17 November 2026. Free to read does not mean free to copy, store or redistribute: the list is a starting point to investigate.
-- The concept is meant for internal use inside a financial institution (research and risk, management, sales and trading, strategists). It is not a client product.
+- The concept is meant for internal use only, inside a financial institution, for sales, trading, research, risk, credit, modelling groups, treasury and ALM, and management. It is not a client product.
 - The track-record page shows a design with placeholder forecasters. It contains no real scores.
 
 ## What this is not

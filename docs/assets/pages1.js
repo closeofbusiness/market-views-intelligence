@@ -32,13 +32,18 @@
     if (M.isTableRow(r.source_quote)) return '<span class="badge tbl-b">table row</span> <span class="trow-i">' + esc(M.tableRowCells(r.source_quote).join(' | ')) + '</span>';
     return '\u201c' + esc(r.source_quote) + '\u201d';
   };
-  // the four user groups, in the order risk and credit first
+  // the eight user groups
   M.USE_GROUPS = [
-    ['Risk management, credit and internal research', 'Challenge models, scenarios and internal views.'],
-    ['Management', 'Test plan and strategy assumptions.'],
-    ['Trading, sales and relationship managers', 'See what a client\u2019s own research publishes, which can differ from what the client says in a call.'],
-    ['Strategists and desk research', 'See what competitors publish.']
+    ['Sales', 'What a client and its peers expect before the call, and where the client differs from the Street.'],
+    ['Trading', 'Where views are crowded and where they are split, when deciding hedges on the own book.'],
+    ['Research and strategists', 'What competitors publish, and where our own view differs.'],
+    ['Risk', 'Assumptions and stress scenarios set beside the outside range.'],
+    ['Credit', 'Rate, commodity and sector outlooks for reviews.'],
+    ['Modelling groups', 'Rate assumptions for leveraged and asset-backed finance models, base and stressed cases.'],
+    ['Treasury and ALM', 'Rate and deposit assumptions tested against what the market expects.'],
+    ['Management and strategy', 'Plan assumptions, and one picture of market expectations across the bank.']
   ];
+  M.CLIENT_NOTE = 'A client\u2019s own published research can differ from what the client says in a call, and that difference is a useful data point.';
   var plural = function (n, a, b) { return n + ' ' + (n === 1 ? a : (b || a + 's')); };
   var pct = function (a, b) { return b ? Math.round(100 * a / b) + '%' : 'n/a'; };
 
@@ -66,12 +71,12 @@
       ['dates', 'Date range', M.fmtDate(M.OLDEST).replace(/^\d+ /, '') + ' – ' + M.fmtDate(M.NEWEST).replace(/^\d+ /, ''), recent + ' of ' + docs.length + ' documents dated within 90 days of the newest (' + M.fmtDate(M.NEWEST) + ')']
     ];
     var h = ['<h1>Overview</h1>',
-      '<p class="lede">For risk management, credit and internal research: see where our own assumptions on rates, FX, inflation, policy rates and commodities sit among what other banks publish, who disagrees, and the sentence behind each number. <a href="#/assumption">Open Assumption check</a></p>',
+      '<p class="lede">One place where the whole bank sees what the market expects and how that is changing. It brings together views published outside the bank and, in a later phase, views recorded inside the bank, such as sales call reports and desk emails on what clients think. AI reads and extracts each forecast and view together with its source. <a href="#/assumption">Open Assumption check</a></p>',
       '<div class="tiles">' + tiles.map(function (t) {
         return '<button type="button" class="tile" data-tile="' + t[0] + '"><span class="tile-k">' + esc(t[1]) + '</span><span class="tile-v' + (String(t[2]).length > 12 ? ' tv-sm' : '') + '">' + esc(t[2]) + '</span><span class="tile-s">' + esc(t[3]) + '</span></button>';
       }).join('') + '</div>',
       (function () { var pv = D.podcasts || [], sp = {}; pv.forEach(function (x) { sp[x.person] = 1; }); return '<p class="podline"><b>' + pv.length + ' podcast views from ' + Object.keys(sp).length + ' speakers</b>, shown separately from the written-research consensus below. <a href="#/podcasts">Open Podcast &amp; interview views</a></p>'; })(),
-      '<section class="card use-block"><div class="card-h"><h2>Who uses it</h2><span class="sub">Internal use inside a financial institution; not a client product and not for redistribution. <a href="#/method">See Method &amp; data</a></span></div><ol class="use-list">' + M.USE_GROUPS.map(function (c) { return '<li><b>' + esc(c[0]) + '</b><span>' + esc(c[1]) + '</span></li>'; }).join('') + '</ol><p class="use-band"><b>An input to challenge. It sets no limit and feeds no model.</b></p></section>'];
+      '<section class="card use-block"><div class="card-h"><h2>Who uses it</h2><span class="sub">Internal use only: inside a financial institution; not a client product and not for redistribution. <a href="#/method">See Method &amp; data</a></span></div><ol class="use-list">' + M.USE_GROUPS.map(function (c) { return '<li><b>' + esc(c[0]) + '</b><span>' + esc(c[1]) + '</span></li>'; }).join('') + '</ol><p class="note">' + esc(M.CLIENT_NOTE) + '</p></section>'];
 
     // heat table
     var cols = M.heatColumns();
