@@ -32,6 +32,13 @@
     if (M.isTableRow(r.source_quote)) return '<span class="badge tbl-b">table row</span> <span class="trow-i">' + esc(M.tableRowCells(r.source_quote).join(' | ')) + '</span>';
     return '\u201c' + esc(r.source_quote) + '\u201d';
   };
+  // the four user groups, in the order risk and credit first
+  M.USE_GROUPS = [
+    ['Risk management, credit and internal research', 'Challenge models, scenarios and internal views.'],
+    ['Management', 'Test plan and strategy assumptions.'],
+    ['Trading, sales and relationship managers', 'See what a client\u2019s own research publishes, which can differ from what the client says in a call.'],
+    ['Strategists and desk research', 'See what competitors publish.']
+  ];
   var plural = function (n, a, b) { return n + ' ' + (n === 1 ? a : (b || a + 's')); };
   var pct = function (a, b) { return b ? Math.round(100 * a / b) + '%' : 'n/a'; };
 
@@ -59,12 +66,12 @@
       ['dates', 'Date range', M.fmtDate(M.OLDEST).replace(/^\d+ /, '') + ' – ' + M.fmtDate(M.NEWEST).replace(/^\d+ /, ''), recent + ' of ' + docs.length + ' documents dated within 90 days of the newest (' + M.fmtDate(M.NEWEST) + ')']
     ];
     var h = ['<h1>Overview</h1>',
-      '<p class="lede">What other banks expect for rates, FX, inflation, policy rates and commodities: where views cluster, where they split, and who sits outside the pack, each number traceable to the sentence it came from.</p>',
+      '<p class="lede">For risk management, credit and internal research: see where our own assumptions on rates, FX, inflation, policy rates and commodities sit among what other banks publish, who disagrees, and the sentence behind each number. <a href="#/assumption">Open Assumption check</a></p>',
       '<div class="tiles">' + tiles.map(function (t) {
         return '<button type="button" class="tile" data-tile="' + t[0] + '"><span class="tile-k">' + esc(t[1]) + '</span><span class="tile-v' + (String(t[2]).length > 12 ? ' tv-sm' : '') + '">' + esc(t[2]) + '</span><span class="tile-s">' + esc(t[3]) + '</span></button>';
       }).join('') + '</div>',
       (function () { var pv = D.podcasts || [], sp = {}; pv.forEach(function (x) { sp[x.person] = 1; }); return '<p class="podline"><b>' + pv.length + ' podcast views from ' + Object.keys(sp).length + ' speakers</b>, shown separately from the written-research consensus below. <a href="#/podcasts">Open Podcast &amp; interview views</a></p>'; })(),
-      '<p class="podline"><b>Intended use:</b> internal use inside a financial institution; not a client product and not for redistribution. <a href="#/method">See Method &amp; data</a></p>'];
+      '<section class="card use-block"><div class="card-h"><h2>Who uses it</h2><span class="sub">Internal use inside a financial institution; not a client product and not for redistribution. <a href="#/method">See Method &amp; data</a></span></div><ol class="use-list">' + M.USE_GROUPS.map(function (c) { return '<li><b>' + esc(c[0]) + '</b><span>' + esc(c[1]) + '</span></li>'; }).join('') + '</ol><p class="use-band"><b>An input to challenge. It sets no limit and feeds no model.</b></p></section>'];
 
     // heat table
     var cols = M.heatColumns();
@@ -162,7 +169,7 @@
       tl.push(['Median', '<button type="button" class="val big" data-group="' + esc(g.key) + '">' + esc(M.fmtV(id, st.median)) + '</button>', 'n=' + st.n + ', ' + M.unitName(id)]);
       tl.push(['Interquartile range', '<span class="big">' + esc(M.fmtBare(id, st.q1)) + ' – ' + esc(M.fmtBare(id, st.q3)) + '</span>', 'width ' + M.fmtSpread(id, st.q3 - st.q1) + ', n=' + st.n]);
       tl.push(['Min – max', '<span class="big">' + esc(M.fmtBare(id, st.min)) + ' – ' + esc(M.fmtBare(id, st.max)) + '</span>', 'spread ' + M.fmtSpread(id, st.max - st.min)]);
-      tl.push(['Outlier limit', '<span class="big">±' + esc(M.fmtSpread(id, st.thr)) + '</span>', 'floor ' + M.fmtSpread(id, st.floor) + ', MAD ' + M.fmtSpread(id, st.mad) + ' (3×1.4826×MAD = ' + M.fmtSpread(id, 3 * 1.4826 * st.mad) + ')']);
+      tl.push(['Outlier threshold', '<span class="big">±' + esc(M.fmtSpread(id, st.thr)) + '</span>', 'floor ' + M.fmtSpread(id, st.floor) + ', MAD ' + M.fmtSpread(id, st.mad) + ' (3×1.4826×MAD = ' + M.fmtSpread(id, 3 * 1.4826 * st.mad) + ')']);
       tl.push(['Outliers', '<span class="big">' + st.outliers + '</span>', 'of ' + st.n + ' forecasters']);
     } else {
       tl.push(['Consensus', '<span class="big few">not shown</span>', 'n=' + st.n + '; at least 4 sources are required']);
@@ -174,7 +181,7 @@
 
     // dot plot
     h.push('<section class="card"><div class="card-h"><h2>Where each forecaster sits</h2><span class="sub">One row per forecaster, latest value. Click a dot for the quote and source.</span></div>');
-    h.push(M.legend([['dot', 'latest value'], ['stale', 'stale (over 90 days older than newest)'], ['out', 'outlier']].concat(st.consensus ? [['band', 'interquartile band'], ['med', 'median'], ['fence', 'outlier limit']] : []).concat(g.cb.length ? [['cb', 'central bank projection (not in consensus)']] : [])));
+    h.push(M.legend([['dot', 'latest value'], ['stale', 'stale (over 90 days older than newest)'], ['out', 'outlier']].concat(st.consensus ? [['band', 'interquartile band'], ['med', 'median'], ['fence', 'outlier threshold']] : []).concat(g.cb.length ? [['cb', 'central bank projection (not in consensus)']] : [])));
     h.push(M.dotPlot(g) + '</section>');
 
     // table
@@ -217,7 +224,7 @@
     var nProse = all.filter(function (o) { return !M.isTableRow(o.e.rec.source_quote); }).length;
     var list = all.filter(function (o) { return (oCat === 'all' || M.varCat(o.g.id) === oCat) && (!oProse || !M.isTableRow(o.e.rec.source_quote)); });
     var h = ['<h1>Outliers &amp; contrarians</h1>',
-      '<p class="lede">Forecasters whose value sits further from the median than the outlier limit: the larger of a per-variable floor and 3 × 1.4826 × MAD. Only groups with at least 4 sources are tested. Ranked by distance from the median in multiples of the floor.</p>',
+      '<p class="lede">Forecasters whose value sits further from the median than the outlier threshold: the larger of a per-variable floor and 3 × 1.4826 × MAD. Only groups with at least 4 sources are tested. Ranked by distance from the median in multiples of the floor.</p>',
       '<div class="tiles tiles-sm"><div class="tile static"><span class="tile-k">Flagged outliers</span><span class="tile-v">' + (M.state.stale ? nWithout : nWith) + '</span><span class="tile-s">' + (M.state.stale ? 'stale values excluded' : 'stale values included') + '; ' + nCons + ' consensus groups tested</span></div>' +
       '<div class="tile static"><span class="tile-k">Stale included</span><span class="tile-v">' + nWith + '</span><span class="tile-s">across ' + Object.keys(M.groups(false)).filter(function (k) { return M.groups(false)[k].stats.consensus; }).length + ' groups with n ≥ 4</span></div>' +
       '<div class="tile static"><span class="tile-k">Stale excluded</span><span class="tile-v">' + nWithout + '</span><span class="tile-s">across ' + Object.keys(M.groups(true)).filter(function (k) { return M.groups(true)[k].stats.consensus; }).length + ' groups with n ≥ 4</span></div></div>',
@@ -226,7 +233,7 @@
     list.forEach(function (o, i) {
       var g = o.g, e = o.e, r = e.rec, id = g.id, st = g.stats;
       h.push('<article class="card ocard"><header><span class="rank">' + (i + 1) + '</span><div><h3><a href="' + esc(varHref(id, g.measure, g.period)) + '">' + esc(M.fullLabel(id, g.measure)) + '</a>, ' + esc(M.periodLabel(g.period)) + (M.isTableRow(r.source_quote) ? '' : '<span class="badge">reasoning stated</span>') + '</h3><p class="sub">' + esc(e.fc) + (r.attributed_institution ? ' (quoted in a ' + esc(r.institution) + ' document)' : '') + ' · as of ' + esc(M.fmtDate(r.as_of_date)) + ' · ' + esc(M.basisShort(r.basis)) + (e.stale ? ' ' + chip('stale', 'Stale') : '') + '</p></div></header>' +
-        '<div class="ometrics"><div><span class="k">Their value</span>' + valBtn(r, M.fmtV(id, r.point_value, true), 'big') + '</div><div><span class="k">Median (n=' + st.n + ')</span><button type="button" class="val big" data-group="' + esc(g.key) + '">' + esc(M.fmtV(id, st.median, true)) + '</button></div><div><span class="k">Distance</span><span class="big">' + esc(M.fmtDiff(id, e.dev)) + '</span></div><div><span class="k">In floor multiples</span><span class="big">' + e.devFloor.toFixed(1) + '×</span><span class="th-s">floor ' + esc(M.fmtSpread(id, st.floor)) + ' (' + esc(M.floorText(id)) + '); limit ' + esc(M.fmtSpread(id, st.thr)) + '</span></div></div>' +
+        '<div class="ometrics"><div><span class="k">Their value</span>' + valBtn(r, M.fmtV(id, r.point_value, true), 'big') + '</div><div><span class="k">Median (n=' + st.n + ')</span><button type="button" class="val big" data-group="' + esc(g.key) + '">' + esc(M.fmtV(id, st.median, true)) + '</button></div><div><span class="k">Distance</span><span class="big">' + esc(M.fmtDiff(id, e.dev)) + '</span></div><div><span class="k">In floor multiples</span><span class="big">' + e.devFloor.toFixed(1) + '×</span><span class="th-s">floor ' + esc(M.fmtSpread(id, st.floor)) + ' (' + esc(M.floorText(id)) + '); threshold ' + esc(M.fmtSpread(id, st.thr)) + '</span></div></div>' +
         M.numberLine(g, e) +
         M.quoteBlock(r) + '<p class="cite">' + srcLink(r) + ' <span class="muted">' + esc(M.titleOf(r)) + '</span></p></article>');
     });
@@ -250,7 +257,7 @@
       '<dt>Document</dt><dd>' + esc(M.titleOf(r)) + ' <span class="muted">(' + esc(String(r.doc_class).replace('_', ' ')) + ')</span></dd></dl>',
       M.quoteBlock(r),
       '<p>' + srcLink(r, 'Open the public source document') + '</p>'];
-    if (ent && g.stats.consensus) h.push('<p class="note">In this group: median ' + esc(M.fmtV(vid, g.stats.median, true)) + ' (n=' + g.stats.n + '). This value is ' + esc(M.fmtDiff(vid, ent.dev)) + ' from the median, ' + ent.devFloor.toFixed(1) + '× the floor' + (ent.outlier ? ' and beyond the outlier limit: <b>flagged outlier</b>' : ', inside the outlier limit') + (ent.stale ? '; it is <b>stale</b>' : '') + '.</p>');
+    if (ent && g.stats.consensus) h.push('<p class="note">In this group: median ' + esc(M.fmtV(vid, g.stats.median, true)) + ' (n=' + g.stats.n + '). This value is ' + esc(M.fmtDiff(vid, ent.dev)) + ' from the median, ' + ent.devFloor.toFixed(1) + '× the floor' + (ent.outlier ? ' and beyond the outlier threshold: <b>flagged outlier</b>' : ', inside the outlier threshold') + (ent.stale ? '; it is <b>stale</b>' : '') + '.</p>');
     else if (ent) h.push('<p class="note">Too few sources for a consensus in this group (n=' + g.stats.n + ').</p>');
     else if (M.cbRecords.indexOf(r) >= 0) h.push('<p class="note"><b>Central bank projection.</b> ' + (r.attributed_person ? esc(r.attributed_person) + ' is an individual policymaker; this is not presented as the institution\u2019s view. ' : '') + 'It is excluded from the Street consensus, dispersion and outlier tests.</p>');
     else if (elig) h.push('<p class="note">This record was superseded by a later value from the same forecaster, or excluded as stale; it does not enter the current statistics.</p>');

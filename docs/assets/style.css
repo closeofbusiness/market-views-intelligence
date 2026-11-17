@@ -306,3 +306,39 @@ details.card[open] summary { margin-bottom: 10px; }
 .srctbl .numc { min-width: 120px; max-width: 200px; }
 .srctbl th.fc { white-space: normal; min-width: 120px; }
 .srctbl td:nth-child(4) { min-width: 90px; max-width: 130px; }
+
+/* assumption check */
+.ac-notice { margin: 0 0 14px; padding: 10px 14px; border: 1px solid var(--s1); border-left-width: 4px; border-radius: 6px; background: var(--info-bg); max-width: 100ch; }
+.ac-inp { display: inline-flex; align-items: center; gap: 8px; }
+.ac-main input[type="number"] { font: inherit; font-size: 14px; color: var(--ink); background: var(--surface); border: 1px solid var(--axis); border-radius: 6px; padding: 6px 9px; width: 150px; font-variant-numeric: tabular-nums; }
+.ac-unit { color: var(--ink2); font-size: 13px; }
+.m-typed { fill: var(--ink); stroke: var(--surface); stroke-width: 1.5; }
+.m-typed-line { stroke: var(--ink); stroke-width: 2.25; }
+.ac-fig { margin: 10px 0 8px; }
+.ac-fig .tile-v { font-size: 20px; }
+.ac-pos, .ac-line { margin: 6px 0; max-width: 110ch; }
+.ac-pos { font-size: 16px; font-weight: 600; }
+.ac-pos .k, .ac-line .k { display: inline-block; min-width: 96px; margin-right: 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--ink2); }
+.ac-honest { margin: 8px 0 4px; padding: 6px 10px; border-left: 3px solid var(--axis); background: var(--surface2); font-size: 13px; max-width: 110ch; }
+.ac-cards { margin-top: 4px; }
+.acard h3 { margin: 0 0 4px; font-size: 14px; }
+.ac-lede { margin-bottom: 10px; }
+.ac-dissent .quote-c { min-width: 260px; }
+.ac-dissent .resp, .ac-dissent .resp-h { min-width: 150px; }
+.ac-dissent td.resp { background: var(--surface2); }
+.tbl .nowrap { white-space: nowrap; }
+@media (max-width: 900px) { .ac-pos .k, .ac-line .k { display: block; } }
+.use-list { list-style: none; counter-reset: u; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin: 0; padding: 0; }
+.use-list li { counter-increment: u; display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface2); font-size: 13px; }
+.use-list li::before { content: counter(u); font-weight: 650; color: var(--ink2); font-size: 12px; }
+.use-list li span { color: var(--ink2); }
+.use-band { margin: 10px 0 0; padding: 6px 10px; border-left: 4px solid var(--s1); background: var(--info-bg); font-size: 13.5px; }
+.tbl thead th.resp-h { white-space: normal; min-width: 130px; }
+.ac-dissent .quote-c { min-width: 220px; max-width: 400px; }
+.tiles.ac-fig { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.ac-fig .tile { padding: 9px 10px; }
+.ac-fig .tile-k { font-size: 11px; letter-spacing: .03em; }
+@media (max-width: 1100px) { .tiles.ac-fig { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .tiles.ac-fig { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.ac-hint { font-size: 12px; color: var(--ink2); }
+.ac-main .controls { align-items: flex-start; }

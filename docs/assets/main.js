@@ -18,7 +18,7 @@
   setTheme(saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
 
   /* ---- routing ---- */
-  var ROUTES = { overview: P.overview, variable: P.variable, outliers: P.outliers, institution: P.institution, themes: P.themes, podcasts: P.podcasts, sources: P.sources, track: P.track, method: P.method };
+  var ROUTES = { overview: P.overview, assumption: P.assumption, variable: P.variable, outliers: P.outliers, institution: P.institution, themes: P.themes, podcasts: P.podcasts, sources: P.sources, track: P.track, method: P.method };
   var parse = function () {
     var parts = (location.hash || '#/overview').replace(/^#\/?/, '').split('/');
     var name = parts[0] || 'overview';
@@ -107,6 +107,12 @@
     }
   });
 
+  /* ---- typed value on the Assumption check page ---- */
+  document.addEventListener('input', function (e) {
+    var el = e.target;
+    if (el.getAttribute && el.getAttribute('data-sel') === 'acval') P.acUpdate(el);
+  });
+
   /* ---- selects ---- */
   document.addEventListener('change', function (e) {
     var el = e.target, kind = el.getAttribute && el.getAttribute('data-sel');
@@ -123,6 +129,7 @@
     else if (kind === 'sacc' || kind === 'sstat' || kind === 'sreg') { P.setSrc(kind, el.value); render(true); }
     else if (kind === 'pspk' || kind === 'pfam') { P.setPod(kind, el.value); render(true); }
     else if (kind === 'oprose') { P.setOprose(el.checked); render(true); }
+    else if (kind === 'acgroup') { var ag = M.G()[el.value]; if (ag) location.hash = '#/assumption/' + ag.id + '/' + (ag.measure || '-') + '/' + encodeURIComponent(ag.period); }
     else if (kind === 'inst') { location.hash = '#/institution/' + encodeURIComponent(el.value); }
   });
 

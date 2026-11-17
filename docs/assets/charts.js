@@ -23,7 +23,8 @@
     out: '<svg width="16" height="16" viewBox="-8 -8 16 16" aria-hidden="true"><path d="M0-7L7 0 0 7-7 0z" class="m-out"/></svg>',
     band: '<svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true"><rect x="1" y="1" width="16" height="10" class="m-band"/></svg>',
     med: '<svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true"><line x1="9" y1="0" x2="9" y2="12" class="m-med"/></svg>',
-    fence: '<svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true"><line x1="9" y1="0" x2="9" y2="12" class="m-fence"/></svg>'
+    fence: '<svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true"><line x1="9" y1="0" x2="9" y2="12" class="m-fence"/></svg>',
+    typed: '<svg width="16" height="16" viewBox="-8 -8 16 16" aria-hidden="true"><path d="M-6-6L6-6 0 6z" class="m-typed"/></svg>'
   };
   M.legend = function (items) {
     return '<ul class="legend">' + items.map(function (i) { return '<li>' + LEG[i[0]] + '<span>' + esc(i[1]) + '</span></li>'; }).join('') + '</ul>';
@@ -57,8 +58,8 @@
       [st.median - st.thr, st.median + st.thr].forEach(function (v) {
         s.push('<line x1="' + f2(x(v)) + '" x2="' + f2(x(v)) + '" y1="' + T + '" y2="' + (H - B - SEP - C.length * RH) + '" class="m-fence"/>');
       });
-      s.push('<text x="' + f2(x(st.median - st.thr)) + '" y="' + (T - 22) + '" class="tick" text-anchor="middle">outlier limit</text>');
-      s.push('<text x="' + f2(x(st.median + st.thr)) + '" y="' + (T - 22) + '" class="tick" text-anchor="middle">outlier limit</text>');
+      s.push('<text x="' + f2(x(st.median - st.thr)) + '" y="' + (T - 22) + '" class="tick" text-anchor="middle">outlier threshold</text>');
+      s.push('<text x="' + f2(x(st.median + st.thr)) + '" y="' + (T - 22) + '" class="tick" text-anchor="middle">outlier threshold</text>');
       s.push('<line x1="' + f2(x(st.median)) + '" x2="' + f2(x(st.median)) + '" y1="' + (T - 8) + '" y2="' + (H - B - SEP - C.length * RH) + '" class="m-med"/>');
       s.push('<text x="' + f2(x(st.median)) + '" y="' + (T - 11) + '" class="lbl-strong" text-anchor="middle">median ' + esc(M.fmtV(id, st.median)) + '</text>');
     }
@@ -228,6 +229,57 @@
       s.push('<text x="' + f2(x(w.hi) + 8) + '" y="' + (cy + 4) + '" class="vlab">' + Math.round(w.p * 100) + '% (' + Math.round(w.lo * 100) + '-' + Math.round(w.hi * 100) + ')</text>');
     });
     s.push('<line x1="' + L + '" x2="' + (W - R) + '" y1="' + (H - B) + '" y2="' + (H - B) + '" class="axis"/></svg>');
+    return s.join('');
+  };
+  /* ---- strip plot for the Assumption check page: published values stacked on one axis, typed value marked ---- */
+  M.stripPlot = function (g, tv, band) {
+    var id = g.id, st = g.stats, E = g.entries.slice().sort(function (a, b) { return a.rec.point_value - b.rec.point_value || (a.fc < b.fc ? -1 : 1); });
+    var hasT = typeof tv === 'number' && isFinite(tv);
+    var W = 880, L = 36, R = 36, T = 66, ST = 14, B = 44;
+    var vals = E.map(function (e) { return e.rec.point_value; }).concat([st.median - st.thr, st.median + st.thr]);
+    if (hasT) vals.push(tv);
+    var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals), pad = (hi - lo) * 0.06 || Math.abs(hi) * 0.05 || 1;
+    var d0 = lo - pad, d1 = hi + pad, iw = W - L - R;
+    var x = function (v) { return L + (v - d0) / (d1 - d0) * iw; };
+    // stack dots that would overlap
+    var lastX = [], rowOf = E.map(function (e) {
+      var px = x(e.rec.point_value), k = 0;
+      while (lastX[k] !== undefined && px - lastX[k] < 13) k++;
+      lastX[k] = px; return k;
+    });
+    var rows = Math.max(1, lastX.length), H = T + rows * ST + 12 + B, axisY = H - B;
+    var aria = 'Strip plot of ' + E.length + ' published values for ' + M.fullLabel(id, g.measure) + ', ' + M.periodLabel(g.period) + '. Median ' + M.fmtV(id, st.median, true) + (band ? ', middle half ' + M.fmtV(id, st.q1) + ' to ' + M.fmtV(id, st.q3) : '') + ', range ' + M.fmtV(id, st.min) + ' to ' + M.fmtV(id, st.max) + (hasT ? '. Typed value ' + M.fmtV(id, tv, true) + '.' : '.');
+    var s = ['<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(aria) + '">'];
+    niceTicks(d0, d1, 8).forEach(function (t) {
+      s.push('<line x1="' + f2(x(t)) + '" x2="' + f2(x(t)) + '" y1="' + T + '" y2="' + axisY + '" class="grid"/>');
+      s.push('<text x="' + f2(x(t)) + '" y="' + (axisY + 16) + '" class="tick" text-anchor="middle">' + esc(M.fmtBare(id, t)) + '</text>');
+    });
+    s.push('<line x1="' + L + '" x2="' + (W - R) + '" y1="' + axisY + '" y2="' + axisY + '" class="axis"/>');
+    s.push('<text x="' + (W - R) + '" y="' + (H - 6) + '" class="tick" text-anchor="end">' + esc(M.unitName(id)) + '</text>');
+    if (band) s.push('<rect x="' + f2(x(st.q1)) + '" y="' + T + '" width="' + f2(Math.max(2, x(st.q3) - x(st.q1))) + '" height="' + (axisY - T) + '" class="m-band"/>');
+    [st.median - st.thr, st.median + st.thr].forEach(function (v) {
+      s.push('<line x1="' + f2(x(v)) + '" x2="' + f2(x(v)) + '" y1="' + T + '" y2="' + axisY + '" class="m-fence"/>');
+    });
+    s.push('<text x="' + f2(x(st.median - st.thr)) + '" y="' + (axisY + 30) + '" class="tick" text-anchor="middle">outlier threshold</text>');
+    s.push('<text x="' + f2(x(st.median + st.thr)) + '" y="' + (axisY + 30) + '" class="tick" text-anchor="middle">outlier threshold</text>');
+    s.push('<line x1="' + f2(x(st.median)) + '" x2="' + f2(x(st.median)) + '" y1="' + (T - 8) + '" y2="' + axisY + '" class="m-med"/>');
+    var anc = function (px) { return px < L + 70 ? 'start' : px > W - R - 70 ? 'end' : 'middle'; };
+    var mx = x(st.median), mAnc = anc(mx), mOff = 0;
+    if (hasT && Math.abs(x(tv) - mx) < 70) { mAnc = x(tv) >= mx ? 'end' : 'start'; mOff = x(tv) >= mx ? -7 : 7; }
+    s.push('<text x="' + f2(mx + mOff) + '" y="' + (T - 12) + '" class="lbl-strong" text-anchor="' + mAnc + '">median ' + esc(M.fmtV(id, st.median, true)) + '</text>');
+    E.forEach(function (e, i) {
+      var r = e.rec, cx = x(r.point_value), cy = axisY - 10 - rowOf[i] * ST;
+      var tip = e.fc + ': ' + M.fmtV(id, r.point_value, true) + ' (as of ' + M.fmtDate(r.as_of_date) + ', ' + M.basisShort(r.basis) + ')' + (e.outlier ? '. Flagged by the outlier rule' : '') + (e.stale ? '. Stale' : '');
+      var mark = e.outlier ? '<path d="M' + f2(cx) + ' ' + (cy - 7.5) + 'l7.5 7.5-7.5 7.5-7.5-7.5z" class="m-out' + (e.stale ? ' stale' : '') + '"/>' : '<circle cx="' + f2(cx) + '" cy="' + cy + '" r="5.5" class="' + (e.stale ? 'm-stale' : 'm-fresh') + '"/>';
+      s.push('<g class="hit" tabindex="0" role="button" data-rec="' + r.id + '" data-tip="' + esc(tip) + '" aria-label="' + esc(tip + '. Open the quote and source.') + '"><circle cx="' + f2(cx) + '" cy="' + cy + '" r="8" class="hitarea"/>' + mark + '</g>');
+    });
+    if (hasT) {
+      var tx = x(tv);
+      s.push('<line x1="' + f2(tx) + '" x2="' + f2(tx) + '" y1="' + (T - 17) + '" y2="' + axisY + '" class="m-typed-line"/>');
+      s.push('<path d="M' + f2(tx - 7) + ' ' + (T - 31) + 'h14l-7 14z" class="m-typed"/>');
+      s.push('<text x="' + f2(tx) + '" y="' + (T - 37) + '" class="lbl-strong" text-anchor="' + anc(tx) + '">typed value ' + esc(M.fmtV(id, tv, true)) + '</text>');
+    }
+    s.push('</svg>');
     return s.join('');
   };
 })();

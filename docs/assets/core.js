@@ -223,6 +223,9 @@
   var gkey = function (v, m, p) { return v + '|' + (m || '') + '|' + p; };
   M.gkey = gkey;
 
+  // the one outlier rule: used for every record and for a typed value on the Assumption check page
+  M.outlierTest = function (st, v) { return !!st.consensus && Math.abs(v - st.median) - st.thr > EPS; };
+
   function computeStats(entries, id) {
     var vals = entries.map(function (e) { return e.rec.point_value; }).sort(function (a, b) { return a - b; });
     var n = vals.length;
@@ -241,7 +244,7 @@
       e.dev = e.rec.point_value - s.median;
       e.devFloor = Math.abs(e.dev) / s.floor;
       e.devThr = Math.abs(e.dev) / s.thr;
-      e.outlier = s.consensus && Math.abs(e.dev) - s.thr > EPS;
+      e.outlier = M.outlierTest(s, e.rec.point_value);
       if (e.outlier) s.outliers++;
     });
     return s;
