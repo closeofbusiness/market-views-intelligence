@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Market Views Intelligence</title>
+<meta name="description" content="Demo of a market views dashboard: consensus, dispersion and outliers across public bank research, with the sentence behind every number.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="skip" href="#view">Skip to content</a>
+<div class="app">
+  <nav class="side" aria-label="Main">
+    <div class="brand"><span class="logo" aria-hidden="true"><svg viewBox="0 0 28 28" width="28" height="28"><rect x="1" y="1" width="26" height="26" rx="6" class="logo-bg"/><path d="M6 20l5-6 4 3 7-9" class="logo-line"/><circle cx="22" cy="8" r="2" class="logo-dot"/></svg></span><span class="brand-t">Market Views<br>Intelligence</span></div>
+    <ul id="nav">
+      <li><a href="#/overview" data-route="overview"><span class="ni">1</span>Overview</a></li>
+      <li><a href="#/variable" data-route="variable"><span class="ni">2</span>Variable view</a></li>
+      <li><a href="#/outliers" data-route="outliers"><span class="ni">3</span>Outliers &amp; contrarians</a></li>
+      <li><a href="#/institution/ING" data-route="institution"><span class="ni">4</span>Institution view</a></li>
+      <li><a href="#/themes" data-route="themes"><span class="ni">5</span>Themes</a></li>
+      <li><a href="#/track" data-route="track"><span class="ni">6</span>Track record <span class="tag">design</span></a></li>
+      <li><a href="#/method" data-route="method"><span class="ni">7</span>Method &amp; data</a></li>
+    </ul>
+    <p class="side-note">Demo idea only. Real published research, collected once (snapshot of 30 Oct 2026) and not updated. A small sample that mixes publication dates: it illustrates a concept, it is not a market survey.</p>
+  </nav>
+  <div class="main">
+    <div class="demo-banner" role="note"><b>Demo idea.</b> Concept illustration only, using real publicly available research collected once (snapshot of 30 Oct 2026); it is not maintained or updated. Not investment advice. Not affiliated with, or endorsed by, any institution named. Short quotations link to the original documents, which remain the source of record.</div>
+    <header class="topbar">
+      <span class="top-t">Demo idea &middot; published views on rates, FX, inflation, policy rates and commodities &middot; one-time data snapshot</span>
+      <div class="top-c">
+        <button type="button" id="stale-btn" class="switch" aria-pressed="true" title="Drop values more than 90 days older than the newest value in their group, then recompute"><span class="track" aria-hidden="true"><span class="knob"></span></span><span>Exclude stale</span><span class="muted" id="stale-count"></span></button>
+        <button type="button" id="theme-btn" class="switch" aria-pressed="false" title="Switch between light and dark"><span class="track" aria-hidden="true"><span class="knob"></span></span><span class="lbl">Light</span></button>
+      </div>
+    </header>
+    <main id="view" tabindex="-1"><noscript>This demo needs JavaScript.</noscript></main>
+    <footer class="foot">Market Views Intelligence · demo with public research data · quotes are short excerpts; follow the links for the originals</footer>
+  </div>
+</div>
+<div id="scrim" hidden></div>
+<aside id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" hidden>
+  <header><h2 id="drawer-title"></h2><button type="button" id="drawer-close" data-close aria-label="Close details">Close</button></header>
+  <div id="drawer-body"></div>
+</aside>
+<div id="tip" role="tooltip" hidden></div>
+<script src="assets/data.js"></script>
+<script src="assets/core.js"></script>
+<script src="assets/charts.js"></script>
+<script src="assets/pages1.js"></script>
+<script src="assets/pages2.js"></script>
+<script src="assets/main.js"></script>
+</body>
+</html>
