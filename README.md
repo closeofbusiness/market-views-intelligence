@@ -9,7 +9,7 @@ A concept illustration of a dashboard that structures published market views on 
 - A **demo idea**, not a product and not a service.
 - A static page with **real, publicly available research data collected once** (snapshot of 30 October 2026). It is **not updated**.
 - 827 forecasts and 64 qualitative views from 48 public research documents of 18 institutions, annotated by hand. Every figure links to the source sentence and the original document.
-- 18 spoken views from 9 named guests on public podcasts, each with a transcript excerpt and a link to the episode. Excerpts come from machine transcripts and may contain transcription errors; the episode audio is the source of record. These views are qualitative and do not enter the consensus numbers.
+- 13 spoken views from 6 named guests on free, public podcasts, each with a transcript excerpt and a link to the episode. Excerpts come from machine transcripts and may contain transcription errors; the episode audio is the source of record. These views are qualitative and do not enter the consensus numbers.
 - The track-record page shows a design with placeholder forecasters. It contains no real scores.
 
 ## What this is not
