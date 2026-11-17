@@ -62,7 +62,8 @@
       '<p class="lede">What other banks expect for rates, FX, inflation, policy rates and commodities: where views cluster, where they split, and who sits outside the pack, each number traceable to the sentence it came from.</p>',
       '<div class="tiles">' + tiles.map(function (t) {
         return '<button type="button" class="tile" data-tile="' + t[0] + '"><span class="tile-k">' + esc(t[1]) + '</span><span class="tile-v' + (String(t[2]).length > 12 ? ' tv-sm' : '') + '">' + esc(t[2]) + '</span><span class="tile-s">' + esc(t[3]) + '</span></button>';
-      }).join('') + '</div>'];
+      }).join('') + '</div>',
+      (function () { var pv = D.podcasts || [], sp = {}; pv.forEach(function (x) { sp[x.person] = 1; }); return '<p class="podline"><b>' + pv.length + ' podcast views from ' + Object.keys(sp).length + ' speakers</b>, shown separately from the written-research consensus below. <a href="#/podcasts">Open Podcast &amp; interview views</a></p>'; })()];
 
     // heat table
     var cols = M.heatColumns();

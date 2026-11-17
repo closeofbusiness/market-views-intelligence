@@ -276,3 +276,13 @@ blockquote .k { margin-bottom: 3px; }
 
 .demo-banner{margin:0;padding:8px 20px;font-size:12.5px;line-height:1.45;background:#fff4d6;color:#4a3a00;border-bottom:1px solid #e6cf85}
 [data-theme="dark"] .demo-banner{background:#3a3210;color:#f1e3a8;border-bottom-color:#6b5a1a}
+
+.podline { margin: -4px 0 16px; font-size: 13.5px; color: var(--ink2); }
+.pcard h3 { font-size: 15px; }
+.pchips { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; }
+.pchips .chip { white-space: normal; }
+.psum { margin: 6px 0; }
+.xlink { margin: 4px 0 0; font-size: 12.5px; }
+
+.pcard a.src { white-space: normal; overflow-wrap: anywhere; }
+.pcard .sub { overflow-wrap: anywhere; }

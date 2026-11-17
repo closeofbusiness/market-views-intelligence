@@ -191,6 +191,73 @@
     return { title: 'Track record (illustrative design)', html: h.join('') };
   };
 
+  /* ---------- PODCAST & INTERVIEW VIEWS ---------- */
+  var pSpk = 'all', pFam = 'all';
+  P.setPod = function (k, v) { if (k === 'pspk') pSpk = v; else pFam = v; };
+  var FAMS = [['policy', 'Policy rates'], ['yield', 'Yields & curve'], ['fx', 'FX & dollar'], ['gold_oil', 'Gold & oil'], ['inflation', 'Inflation'], ['credit', 'Credit']];
+  var podFamily = function (p) { // by variable where given, otherwise by the topic text
+    var v = p.variable_id || '', t = (p.topic || '').toLowerCase();
+    if (/^(FED|ECB|BOE|BOJ)_/.test(v)) return 'policy';
+    if (/_YIELD$/.test(v)) return 'yield';
+    if (v === 'DXY') return 'fx';
+    if (v === 'GOLD' || v === 'BRENT' || v === 'WTI') return 'gold_oil';
+    if (/hyperscaler|credit/.test(t)) return 'credit';
+    if (/yield|treasury|real interest/.test(t)) return 'yield';
+    if (/discount rate|policy rate/.test(t)) return 'policy';
+    if (/purchasing power/.test(t)) return 'inflation';
+    if (/dollar/.test(t)) return 'fx';
+    if (/gold|oil|commodit|metal/.test(t)) return 'gold_oil';
+    return 'policy';
+  };
+  var crossLink = function (p) {
+    if (!p.variable_id) return '';
+    var G = M.groups(false), best = null;
+    Object.keys(G).forEach(function (k) {
+      var g = G[k];
+      if (g.id !== p.variable_id) return;
+      var s = (g.stats.consensus ? 1000 : 0) + g.nAll;
+      if (!best || s > best.s || (s === best.s && g.key < best.g.key)) best = { g: g, s: s };
+    });
+    if (!best) return '<p class="xlink muted">No written-research values for ' + esc(M.fullLabel(p.variable_id)) + ' in this sample.</p>';
+    var g = best.g, any = Object.keys(G).some(function (k) { return G[k].id === p.variable_id && G[k].stats.consensus; });
+    return '<p class="xlink"><a href="' + esc(M.varHref(g.id, g.measure, g.period)) + '">Compare with written research: ' + esc(M.fullLabel(g.id, g.measure)) + '</a> <span class="muted">(' + (any ? 'consensus available for some periods' : 'individual values only: too few sources for a consensus') + ')</span></p>';
+  };
+  P.podcasts = function () {
+    var A = D.podcasts || [];
+    var spk = {}, shows = {}, dates = [];
+    A.forEach(function (p) { spk[p.person] = 1; shows[p.show] = 1; dates.push(p.episode_date); });
+    dates.sort();
+    var speakers = Object.keys(spk).sort();
+    var famCount = {}; A.forEach(function (p) { var f = podFamily(p); famCount[f] = (famCount[f] || 0) + 1; });
+    if (pSpk !== 'all' && !spk[pSpk]) pSpk = 'all';
+    var list = A.filter(function (p) { return (pSpk === 'all' || p.person === pSpk) && (pFam === 'all' || podFamily(p) === pFam); });
+    var h = ['<h1>Podcast &amp; interview views</h1>',
+      '<p class="lede">Views spoken by named guests on public podcasts, shown with the transcript sentence and a link to the episode. They are qualitative: they are <b>not</b> merged into the written-research consensus numbers, and the cross-links below only take you to the written-research variable view for comparison.</p>',
+      '<div class="tiles tiles-sm"><div class="tile static"><span class="tile-k">Views</span><span class="tile-v">' + A.length + '</span><span class="tile-s">spoken views in the sample</span></div>' +
+      '<div class="tile static"><span class="tile-k">Speakers</span><span class="tile-v">' + speakers.length + '</span><span class="tile-s">named guests</span></div>' +
+      '<div class="tile static"><span class="tile-k">Shows</span><span class="tile-v">' + Object.keys(shows).length + '</span><span class="tile-s">public podcasts</span></div>' +
+      '<div class="tile static"><span class="tile-k">Date range</span><span class="tile-v tv-sm">' + esc(M.fmtDate(dates[0]).replace(/ 20\d\d$/, '') + ' – ' + M.fmtDate(dates[dates.length - 1])) + '</span><span class="tile-s">episode dates</span></div></div>',
+      '<div class="banner info"><b>Provenance.</b> Quotes come from machine transcripts of public podcast episodes and may contain transcription errors. Each speaker is the episode’s named guest, identified by speaker separation with a human confirmation. The episode audio is the source of record. Collected once; not updated.</div>',
+      '<div class="controls"><label>Speaker<select data-sel="pspk" aria-label="Speaker"><option value="all">All speakers (' + speakers.length + ')</option>' + speakers.map(function (n) { return '<option' + (n === pSpk ? ' selected' : '') + '>' + esc(n) + '</option>'; }).join('') + '</select></label>' +
+      '<label>Topic family<select data-sel="pfam" aria-label="Topic family"><option value="all">All topics</option>' + FAMS.filter(function (f) { return famCount[f[0]]; }).map(function (f) { return '<option value="' + f[0] + '"' + (f[0] === pFam ? ' selected' : '') + '>' + esc(f[1]) + ' (' + famCount[f[0]] + ')</option>'; }).join('') + '</select></label>' +
+      '<span class="muted">Showing ' + list.length + ' of ' + A.length + ' views.</span></div>'];
+    FAMS.forEach(function (f) {
+      var items = list.filter(function (p) { return podFamily(p) === f[0]; });
+      if (!items.length) return;
+      h.push('<section class="theme"><div class="card-h"><h2>' + esc(f[1]) + '</h2><span class="sub">' + plural(items.length, 'view') + ' of ' + A.length + '</span></div><div class="cards">' +
+        items.map(function (p) {
+          return '<article class="card vcard pcard"><header><h3>' + esc(p.person) + '<span class="th-s">' + esc(p.role) + ' on ' + esc(p.show) + '</span></h3></header>' +
+            '<p class="sub"><a class="src" href="' + esc(p.episode_url) + '" target="_blank" rel="noopener noreferrer">' + esc(p.episode_title) + ' <span aria-hidden="true">↗</span></a> · ' + esc(M.fmtDate(p.episode_date)) + '</p>' +
+            '<p class="pchips"><span class="chip">' + esc(p.topic) + '</span> <span class="chip chip-dir">Direction: ' + esc(p.direction) + '</span>' + (p.horizon_text ? ' <span class="chip chip-note">Horizon: ' + esc(p.horizon_text) + '</span>' : '') + '</p>' +
+            '<p class="psum">' + esc(p.summary) + '</p>' +
+            '<blockquote><span class="k">Transcript excerpt (machine transcription)</span>“' + esc(p.quote) + '”</blockquote>' + crossLink(p) + '</article>';
+        }).join('') + '</div></section>');
+    });
+    if (!list.length) h.push('<p class="muted">No views match these filters.</p>');
+    h.push('<p class="note">Topic families are assigned from the variable where one is given, otherwise from the topic text. Direction and horizon are shown as extracted, in the wording of the summary; they are not normalised.</p>');
+    return { title: 'Podcast & interview views', html: h.join('') };
+  };
+
   /* ---------- METHOD & DATA ---------- */
   P.method = function () {
     var W = M.waterfall, G = M.groups(false), GX = M.groups(true);
@@ -222,7 +289,7 @@
       '<li><b>Ranges, probabilities, scenarios</b> are in the data but excluded from the consensus (see the waterfall above).</li>' +
       '<li><b>Quotes</b> are reproduced exactly as extracted, including odd spacing from the source PDF.</li></ul></section>');
 
-    h.push('<section class="card"><div class="card-h"><h2>Data provenance</h2></div><p>The data are a hand-annotated and adjudicated extraction from <b>' + D.documents.length + ' publicly available research documents of ' + M.institutions().length + ' institutions</b>: ' + W.total + ' forecast records and ' + M.views.length + ' qualitative views. Quotes are short excerpts with links to the originals; the original document remains the source of record. The sample is small and mixes publication dates (' + esc(M.fmtDate(M.OLDEST)) + ' to ' + esc(M.fmtDate(M.NEWEST)) + '), so it demonstrates the product; it is not a market survey. The page makes no network requests: the data are embedded in the page, and links to the source documents only open when you click them.</p></section>');
+    h.push('<section class="card"><div class="card-h"><h2>Data provenance</h2></div><p>The data are a hand-annotated and adjudicated extraction from <b>' + D.documents.length + ' publicly available research documents of ' + M.institutions().length + ' institutions</b>: ' + W.total + ' forecast records and ' + M.views.length + ' qualitative views. Quotes are short excerpts with links to the originals; the original document remains the source of record. The sample is small and mixes publication dates (' + esc(M.fmtDate(M.OLDEST)) + ' to ' + esc(M.fmtDate(M.NEWEST)) + '), so it demonstrates the product; it is not a market survey. The page makes no network requests: the data are embedded in the page, and links to the source documents only open when you click them.</p><p><b>Podcast and interview views.</b> Quotes come from machine transcripts of public podcast episodes and may contain transcription errors. Each speaker is the episode\u2019s named guest, identified by speaker separation with a human confirmation. The episode audio is the source of record. The views were collected once and are not updated. They are qualitative and are never merged into the written-research consensus.</p></section>');
 
     h.push('<section class="card roadmap"><div class="card-h"><h2>Roadmap</h2></div><ul class="plain">' +
       '<li><b>Client-view segmentation.</b> Tag each view by client segment (real money, hedge funds, corporates, central banks) so desks can see what the clients they cover expect, next to what competitors publish.</li>' +

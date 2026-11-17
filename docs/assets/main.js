@@ -18,7 +18,7 @@
   setTheme(saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
 
   /* ---- routing ---- */
-  var ROUTES = { overview: P.overview, variable: P.variable, outliers: P.outliers, institution: P.institution, themes: P.themes, track: P.track, method: P.method };
+  var ROUTES = { overview: P.overview, variable: P.variable, outliers: P.outliers, institution: P.institution, themes: P.themes, podcasts: P.podcasts, track: P.track, method: P.method };
   var parse = function () {
     var parts = (location.hash || '#/overview').replace(/^#\/?/, '').split('/');
     var name = parts[0] || 'overview';
@@ -120,6 +120,7 @@
       var v = el.getAttribute('data-var').split('|');
       location.hash = M.varHref(v[0], v[1], el.value);
     } else if (kind === 'ocat') { P.setOcat(el.value); render(true); }
+    else if (kind === 'pspk' || kind === 'pfam') { P.setPod(kind, el.value); render(true); }
     else if (kind === 'oprose') { P.setOprose(el.checked); render(true); }
     else if (kind === 'inst') { location.hash = '#/institution/' + encodeURIComponent(el.value); }
   });
