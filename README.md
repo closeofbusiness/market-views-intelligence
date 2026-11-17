@@ -8,7 +8,7 @@ A concept illustration of a dashboard that structures published market views on 
 
 - A **demo idea**, not a product and not a service.
 - A static page with **real, publicly available research data collected once** (snapshot of 30 October 2026). It is **not updated**.
-- 827 forecasts and 64 qualitative views from 48 public research documents of 18 institutions, annotated by hand. Every figure links to the source sentence and the original document.
+- 827 forecasts and 64 qualitative views from 48 public research documents of 18 institutions, extracted by two independent language-model readings with an adjudicating pass, a word-for-word quotation check in code and a blind human sample check. Every figure links to the source sentence and the original document.
 - 21 spoken views from 8 named speakers on free, public podcasts, each with a transcript excerpt and a link to the episode. Excerpts come from machine transcripts and may contain transcription errors; the episode audio is the source of record. These views are qualitative and do not enter the consensus numbers.
 - A Sources page listing 67 institutions (banks, asset managers, insurers) that publish market research freely on the open web; 37 were opened and read without login on 17 November 2026. Free to read does not mean free to copy, store or redistribute: the list is a starting point to investigate.
 - The concept is meant for internal use inside a financial institution (research and risk, management, sales and trading, strategists). It is not a client product.
