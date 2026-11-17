@@ -63,7 +63,8 @@
       '<div class="tiles">' + tiles.map(function (t) {
         return '<button type="button" class="tile" data-tile="' + t[0] + '"><span class="tile-k">' + esc(t[1]) + '</span><span class="tile-v' + (String(t[2]).length > 12 ? ' tv-sm' : '') + '">' + esc(t[2]) + '</span><span class="tile-s">' + esc(t[3]) + '</span></button>';
       }).join('') + '</div>',
-      (function () { var pv = D.podcasts || [], sp = {}; pv.forEach(function (x) { sp[x.person] = 1; }); return '<p class="podline"><b>' + pv.length + ' podcast views from ' + Object.keys(sp).length + ' speakers</b>, shown separately from the written-research consensus below. <a href="#/podcasts">Open Podcast &amp; interview views</a></p>'; })()];
+      (function () { var pv = D.podcasts || [], sp = {}; pv.forEach(function (x) { sp[x.person] = 1; }); return '<p class="podline"><b>' + pv.length + ' podcast views from ' + Object.keys(sp).length + ' speakers</b>, shown separately from the written-research consensus below. <a href="#/podcasts">Open Podcast &amp; interview views</a></p>'; })(),
+      '<p class="podline"><b>Intended use:</b> internal use inside a financial institution; not a client product and not for redistribution. <a href="#/method">See Method &amp; data</a></p>'];
 
     // heat table
     var cols = M.heatColumns();
